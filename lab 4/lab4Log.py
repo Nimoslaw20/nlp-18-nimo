@@ -51,7 +51,7 @@ def LGnormalized(newfile):
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
     score = clf.score(x_test, y_test)
-    print(score)
+    print("Accuracy: ", score)
     print(pre)
     file = open("results-lr-n.txt","a")
     for i  in pre:
@@ -85,6 +85,8 @@ def LGunnormalized(newfile):
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
     print(pre)
+    score = clf.score(x_test, y_test)
+    print("Accuracy: ", score)
 
     file = open("results-lr-u.txt","a")
     for i  in pre:

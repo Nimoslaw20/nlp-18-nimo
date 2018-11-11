@@ -59,7 +59,7 @@ def NBnormalized(newfile):
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
     print(pre)
-    print(score)
+    print("Accuracy: ", score)
     file = open("results-nb-n.txt","a")
     for i  in pre:
         print(i)
@@ -89,7 +89,7 @@ def NBunnormalized(newfile):
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
     print(pre)
-    print(score)
+    print("Accuracy: ", score)
 
     file = open("results-nb-u.txt","a")
     for i  in pre:
