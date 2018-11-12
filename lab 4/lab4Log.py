@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 import argparse
 
 # function for reading a new file for testing 
@@ -35,24 +36,34 @@ def LGnormalized(newfile):
     df3 = pd.read_csv(filename3, sep="\t", names=["docs", "class"])
     folder = pd.concat([df1, df2, df3], axis= 0, join='inner') 
 
-    #Normalization with stopwords
+    #Normalization with stopwords using vectroization
     n = set(stopwords.words("english")) 
+
+    #Convert a collection of raw documents to a matrix of TF-IDF features.
     Vectwords =  TfidfVectorizer(use_idf= True, lowercase=True, strip_accents="ascii", stop_words=n)
     y = folder['class']
+
+    #Learn vocabulary and idf, return term-document matrix.
     x = Vectwords.fit_transform(folder.docs)
 
     #Training data given all three files
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=40)
     clf = LogisticRegression()
     clf.fit(x_train, y_train)
+    predict = clf.predict(x_test)
+    acc =accuracy_score(y_test, predict)
+    
 
     #Testing the given file and outputing result file
     classifier =np.array(newfile)
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
     score = clf.score(x_test, y_test)
-    print("Accuracy: ", score)
-    print(pre)
+    
+    print("Accuracy: ", acc*100)
+    print("Score :", score)
+
+
     file = open("results-lr-n.txt","a")
     for i  in pre:
         print(i)
@@ -68,9 +79,12 @@ def LGunnormalized(newfile):
     folder = pd.read_csv(filename, sep="\t", names=["docs", "class"]) 
     
 
-    #Logistic regression without normalization
+    #Logistic regression without normalization using vectorization
+    #Convert a collection of raw documents to a matrix of TF-IDF features.
     Vectwords =  TfidfVectorizer(use_idf= False, lowercase=False, strip_accents="ascii")
     y = folder['class']
+
+    #Learn vocabulary and idf, return term-document matrix.
     x = Vectwords.fit_transform(folder.docs)
 
     #Training data
@@ -79,14 +93,20 @@ def LGunnormalized(newfile):
     
     clf = LogisticRegression()
     clf.fit(x_train, y_train)
+    predict = clf.predict(x_test)
+    acc =accuracy_score(y_test, predict)
     
     #testing the given file using the logistic regression classifer
     classifier =np.array(newfile)
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
-    print(pre)
-    score = clf.score(x_test, y_test)
-    print("Accuracy: ", score)
+
+
+    #print(pre)
+    print("Accuracy: ", acc*100)
+    #print("Score :", score)
+
+   
 
     file = open("results-lr-u.txt","a")
     for i  in pre:

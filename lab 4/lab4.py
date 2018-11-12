@@ -11,6 +11,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from  sklearn import naive_bayes as nb
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 import argparse
 
 
@@ -43,8 +44,12 @@ def NBnormalized(newfile):
 
 #Naive bayes with normalization
     n = set(stopwords.words("english")) 
+
+    #Convert a collection of raw documents to a matrix of TF-IDF features.
     Vectwords =  TfidfVectorizer(use_idf= True, lowercase=True, strip_accents="ascii", stop_words=n)
     y = folder['class']
+
+    #Learn vocabulary and idf, return term-document matrix.
     x = Vectwords.fit_transform(folder.docs)
 
 
@@ -53,13 +58,19 @@ def NBnormalized(newfile):
     clf = nb.MultinomialNB()
     clf.fit(x_train, y_train)
     score = roc_auc_score(y_test, clf.predict_proba(x_test)[:,1])
+    predict = clf.predict(x_test)
+    acc =accuracy_score(y_test, predict)
+    
 
 #Testing new file
     classifier =np.array(newfile)
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
-    print(pre)
-    print("Accuracy: ", score)
+    #print(pre)
+    print("Accuracy: ", acc*100)
+    print("Score :", score)
+
+
     file = open("results-nb-n.txt","a")
     for i  in pre:
         print(i)
@@ -73,8 +84,11 @@ def NBunnormalized(newfile):
     filename = "amazon_cells_labelled.txt"
     folder = pd.read_csv(filename, sep="\t", names=["docs", "class"]) 
     
+    #Convert a collection of raw documents to a matrix of TF-IDF features.
     Vectwords =  TfidfVectorizer(use_idf= False, lowercase=False, strip_accents="ascii")
     y = folder['class']
+
+    #Learn vocabulary and idf, return term-document matrix.
     x = Vectwords.fit_transform(folder.docs)
 
 #Training data using given trained files
@@ -83,13 +97,16 @@ def NBunnormalized(newfile):
     clf = nb.MultinomialNB()
     clf.fit(x_train, y_train)
     score = roc_auc_score(y_test, clf.predict_proba(x_test)[:,1])
+    predict = clf.predict(x_test)
+    acc =accuracy_score(y_test, predict)
     
 #testing given file
     classifier =np.array(newfile)
     classifier_vect = Vectwords.transform(classifier)
     pre = clf.predict(classifier_vect)
-    print(pre)
-    print("Accuracy: ", score)
+    #print(pre)
+    print("Accuracy: ", acc*100)
+    print("Score :", score)
 
     file = open("results-nb-u.txt","a")
     for i  in pre:
